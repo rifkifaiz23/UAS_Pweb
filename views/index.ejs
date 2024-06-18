@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H-state</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 4em;
+            color: #6F5239;
+            font-family: sans-serif;
+        }
+
+        .header h1:hover {
+            color: #3F2A1B;
+        }
+
+        .header .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.8s;
+        }
+
+        .header .login {
+            background-color: #E0E0E0;
+            color: #000000;
+            border-radius: 20px;
+            box-shadow: 4px 5px rgba(113, 108, 108, 0.562);
+        }
+
+        .header .login:hover {
+            background-color: #6F5239;
+            box-shadow: 4px 5px rgba(113, 108, 108, 0.562);
+            color: white;
+        }
+
+        .header .signup {
+            background-color: #6F5239;
+            color: white;
+            border-radius: 20px;
+            box-shadow: 4px 5px rgba(113, 108, 108, 0.562);
+        }
+
+        .header .signup:hover {
+            background-color: #B3B3B3;
+            color: black;
+            box-shadow: 4px 5px black;
+        }
+
+        .background-image {
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            height: calc(100% - 80px);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+            color: white;
+            padding-left: 40px;
+        }
+
+        .background-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* Overlay for better text visibility */
+            z-index: 1;
+        }
+
+        .background-content {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            padding: 20px;
+            margin-top: 240px;
+            margin-left: 60px;
+        }
+
+        .background-content h2 {
+            font-size: 2.5em;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .background-content p {
+            font-size: 2.5em;
+            margin: 10px 0 0;
+            font-family: sans-serif;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: white;
+            color: #5A3E26;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>H-state.com</h1>
+        <div class="buttons">
+            <a href="/login"><button class="login">Masuk</button></a>
+            <a href="/register"><button class="signup">Daftar</button></a>
+        </div>
+    </div>
+    <div class="background-image">
+        <div class="background-content">
+            <h2>Reservasi Hotel Gapake Ribet?</h2>
+            <p>H-State Aja!</p>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2024 H-state.com
+    </div>
+</body>
+</html>

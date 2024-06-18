@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H-state</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #6F5239;
+            font-weight: bold;
+        }
+
+        .header h1:hover {
+            color: #3F2A1B;
+        }
+
+        .header .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.8s;
+        }
+
+        .header .logout,
+        .header .menus {
+            background-color: #6F5239;
+            color: white;
+            border-radius: 20px;
+            box-shadow: 2px 3px rgba(113, 108, 108, 0.562);
+        }
+
+        .header .logout:hover,
+        .header .menus:hover {
+            background-color: #B3B3B3;
+            color: black;
+            box-shadow: 2px 3px black;
+        }
+
+        .background {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            /* Menggunakan viewport height untuk ukuran background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .content {
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            padding-top: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: 20px;
+            max-width: 1000px;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .content h2 {
+            font-size: 1.5em;
+            color: #6F5239;
+            margin-bottom: 30px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .room-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-left: 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .room-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: left;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: relative;
+            width: calc(100% - 40px);
+            height: 180px;
+            margin-bottom: 15px;
+        }
+
+        .room-card:hover {
+            transform: scale(1.025);
+        }
+
+        .room-card img {
+            width: 150px;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .room-card .info {
+            flex: 1;
+            padding: 12px;
+        }
+
+        .room-card .info .room {
+            font-weight: bold;
+        }
+
+        .room-card p {
+            margin: 4px 0;
+            font-size: 1.2em;
+            color: #6F5239;
+
+        }
+
+        .room-card .price {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            margin-right: 10px;
+        }
+
+        .room-card .price p {
+            margin: 0;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #6F5239;
+        }
+
+        .room-card .buttons {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            gap: 5px;
+        }
+
+        .room-card:hover .buttons {
+            display: flex;
+        }
+
+        .room-card .buttons button {
+            padding: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: white;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .room-card .buttons .edit {
+            background-color: rgb(21, 86, 176);
+            border-radius: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .room-card .buttons .delete {
+            background-color: red;
+            border-radius: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .room-card .buttons .cetak-resi {
+            background-color: green;
+            border-radius: 20px;
+            padding-left: 10px;
+            padding-right: 10px;
+            margin-right: 10px;
+        }
+
+        .room-card .buttons button i {
+            margin-right: 5px;
+        }
+
+        .room-card .buttons button:hover {
+            transform: scale(1.05);
+        }
+
+        .room-card .buttons .delete::before {
+            content: '\f2ed';
+            /* Font Awesome trash icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 5px;
+        }
+
+        .room-card .buttons .edit::before {
+            content: '\f304';
+            /* Font Awesome pencil-alt icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: white;
+            color: #5A3E26;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Remove horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050;
+            display: none;
+            overflow: hidden;
+            outline: 0;
+        }
+
+        .modal-dialog {
+            position: relative;
+            margin: 20px auto;
+            max-width: 800px;
+            /* Sesuaikan dengan lebar maksimum modal */
+        }
+
+        .modal-content {
+            margin: auto;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        @media (min-width: 576px) {
+            .modal-dialog {
+                max-width: 500px;
+                /* Atur ulang untuk ukuran modal pada layar yang lebih kecil */
+            }
+        }
+
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.5em;
+            color: #6F5239;
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .modal-footer .btn {
+            border-radius: 20px;
+            padding: 10px 20px;
+        }
+
+        .modal-footer .btn-save {
+            background-color: #6F5239;
+            color: #fff;
+            margin-right: 10px;
+            gap: 5px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .modal-footer .btn-save :hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+        .modal-footer .btn-tutup {
+            background-color: #6F5239;
+            color: #fff;
+            margin-right: 5px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .modal-footer .btn-tutup :hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+
+
+
+        .modal input[type="text"],
+        .modal input[type="date"],
+        .modal input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal button.close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        /* Additional styling for custom elements */
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 30px);
+        }
+
+        .modal-backdrop {
+            opacity: 0.5;
+        }
+
+        .btn-hijau {
+            background-color: rgb(18, 172, 18);
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        
+        }
+
+        .btn-hijau:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+        
+        .btn-tidak {
+            background-color: rgb(18, 172, 18);
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .btn-tidak:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+        .btn-no {
+            background-color: rgb(18, 172, 18);
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+            margin-right: 10px;
+        }
+
+        .btn-no:hover {
+            scale: 1.05;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: red;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .btn-danger:hover {
+            scale: 1.05;
+            color: white;
+        }
+
+        .btn-ya {
+            background-color: red;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .btn-ya:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+
+        .btn-red {
+            background-color: red;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        
+        }
+
+        .btn-red:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>H-state.com</h1>
+        <div class="buttons">
+            <a href="/menus"><button class="menus">Menu</button></a>
+            <button class="logout" data-toggle="modal" data-target="#logoutModal">Log Out</button>
+        </div>
+    </div>
+
+    <div class="background">
+        <div class="content">
+            <h2>PESANAN SAYA</h2>
+            <div class="room-grid">
+                <% function formatDate(dateString) { const options={ weekday: 'long' , year: 'numeric' , month: 'long' ,
+                    day: 'numeric' }; const date=new Date(dateString); return date.toLocaleDateString('id-ID', options);
+                    } %>
+
+                    <% reservations.forEach(reservation=> { %>
+                        <div class="room-card" data-room_id="<%= reservation.id_reservasi %>">
+
+                            <img src="<%= reservation.gambar %>" alt="Room Image">
+                            <div class="info">
+                                <p class="room">Room ID: <%= reservation.id_room %> (<%= reservation.kategori %>)</p>
+                                <p class="fullname">Full Name: <%= reservation.fullname %>
+                                </p>
+                                <p class="nohp">No. HP: <%= reservation.noHP %>
+                                </p>
+                                <p class="check-in">Check-in: <%= formatDate(reservation.checkin) %>
+                                </p>
+                                <p class="check-out">Check-out: <%= formatDate(reservation.checkout) %>
+                                </p>
+                            </div>
+                            <div class="price">
+                                <p class="harga">
+                                    <%= reservation.harga %>
+                                </p>
+                            </div>
+                            <div class="buttons">
+                                <button class="delete" data-id="<%= reservation.id_reservasi %>"
+                                    data-room_id="<%= reservation.id_reservasi %>">
+                                    Delete
+                                </button>
+                                <!-- Tambahkan data-toggle dan data-target untuk memicu modal Bootstrap -->
+                                <button class="edit" data-toggle="modal" data-target="#editModal"
+                                    data-fullname="<%= reservation.fullname %>" data-nohp="<%= reservation.noHP %>"
+                                    data-checkin="<%= reservation.checkin %>"
+                                    data-checkout="<%= reservation.checkout %>"
+                                    data-id="<%= reservation.id_reservasi %>">
+                                    Edit
+                                </button>
+                                <button class="cetak-resi" onclick="cetakResi('<%= reservation.id_reservasi %>')">
+                                    <i class="fas fa-download"></i> Cetak Resi
+                                </button>
+                            </div>
+                        </div>
+                        <% }); %>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Room Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="/update-reservation" method="POST" id="editForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="fullName" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="noHP">No. Hp</label>
+                            <input type="text" class="form-control" id="noHP" name="noHP" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="checkInDate">Check-in Date</label>
+                            <input type="date" class="form-control" id="checkInDate" name="checkInDate" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="checkOutDate">Check-out Date</label>
+                            <input type="date" class="form-control" id="checkOutDate" name="checkOutDate" value="">
+                        </div>
+                        <!-- Hidden input for room ID -->
+                        <input type="hidden" id="reservationId" name="reservationId">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-tutup" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-save"><i class="fas fa-save"></i> Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sukses Update -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Update Berhasil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Reservasi telah berhasil diperbarui.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Delete -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus Reservasi</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus reservasi ini?
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteForm">
+                        <!-- Hidden input for reservation ID -->
+                        <input type="hidden" id="reservationId" name="reservationId" value="">
+                        <button type="button" class="btn btn-no" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">Hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sukses Hapus -->
+    <div class="modal fade" id="successDeleteModal" tabindex="-1" role="dialog"
+        aria-labelledby="successDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successDeleteModalLabel">Hapus Berhasil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Reservasi telah berhasil dihapus.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Logout -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Logout Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah anda yakin ingin keluar dari akun ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-hijau" data-dismiss="modal">Tidak</button>
+                    <button type="button" class="btn btn-red" id="confirmLogout">Ya</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 H-state.com</p>
+    </div>
+
+
+
+    <!-- Link to Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Script untuk menangani modal edit -->
+    <script>
+
+        // Fungsi untuk menampilkan modal edit dengan data yang sesuai
+        $('.edit').on('click', function () {
+            var fullname = $(this).data('fullname');
+            var noHP = $(this).data('nohp');
+            var checkin = $(this).data('checkin');
+            var checkout = $(this).data('checkout');
+            var id_reservasi = $(this).data('id');
+
+            $('#fullName').val(fullname);
+            $('#noHP').val(noHP);
+            $('#checkInDate').val(checkin);
+            $('#checkOutDate').val(checkout);
+            $('#reservationId').val(id_reservasi);
+
+            $('#editModal').modal('show');
+        });
+
+
+    </script>
+
+    <!-- Script untuk menangani modal sukses update -->
+    <script>
+        // Script untuk menampilkan modal sukses setelah update
+        $(document).ready(function () {
+            // Handler submit form edit untuk menampilkan modal sukses
+            $('#editForm').submit(function (event) {
+                event.preventDefault();
+
+                // Ambil URL form action
+                var url = $(this).attr('action');
+
+                // Ambil data dari form
+                var formData = $(this).serialize();
+
+                // Kirim permintaan update dengan AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        // Sembunyikan modal edit
+                        $('#editModal').modal('hide');
+
+                        // Tampilkan modal sukses
+                        $('#successModal').modal('show');
+
+                        // Refresh halaman setelah 2 detik
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000); // Waktu dalam milidetik (2000 ms = 2 detik)
+                    },
+                    error: function (error) {
+                        console.error('Error updating reservation:', error);
+                        // Handle error, tampilkan pesan atau notifikasi error
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        // Script untuk menangani modal konfirmasi delete
+        $(document).ready(function () {
+            let reservationId; // Variabel untuk menyimpan ID reservasi
+
+            // Handler klik untuk tombol hapus
+            $('.delete').click(function (event) {
+                event.preventDefault();
+                reservationId = $(this).data('id'); // Dapatkan ID reservasi dari atribut data
+                $('#deleteModal').modal('show'); // Tampilkan modal konfirmasi
+            });
+
+            // Handler klik untuk tombol konfirmasi hapus di dalam modal
+            $('#confirmDeleteBtn').click(function (event) {
+                event.preventDefault();
+                // Gunakan ID reservasi yang disimpan sebelumnya
+                fetch('/delete-reservasi', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ reservationId }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Gagal menghapus reservasi');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            $('#deleteModal').modal('hide'); // Tutup modal konfirmasi
+                            $(`.room-card[data-room_id="${reservationId}"]`).remove(); // Hapus kartu reservasi dari tampilan
+                            $('#successDeleteModal').modal('show'); // Tampilkan modal sukses
+                        } else {
+                            throw new Error(data.message || 'Gagal menghapus reservasi');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle error, tampilkan alert, dll.
+                    });
+            });
+        });
+    </script>
+
+    <script>
+        function cetakResi(reservationId) {
+            // Memanggil endpoint dengan menggunakan fetch
+            fetch(`/cetak-resi/${reservationId}`)
+                .then(response => {
+                    // Mengambil response dalam bentuk blob (binary data)
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Membuat URL untuk blob tersebut
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Membuat link untuk download
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `Resi_Reservasi_${reservationId}.pdf`;
+
+                    // Menambahkan link ke dalam body dan mengkliknya
+                    document.body.appendChild(a);
+                    a.click();
+
+                    // Membersihkan URL dan elemen link
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Error downloading PDF:', error);
+                    // Menangani error jika ada
+                });
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Menampilkan modal ketika tombol Log Out ditekan
+            $('.logout').click(function () {
+                $('#logoutModal').modal('show');
+            });
+
+            // Handler saat tombol logout di modal diklik
+            $('#confirmLogout').click(function () {
+                // Lakukan proses logout di sini, misalnya:
+                window.location.href = "/logout"; // Ganti dengan URL logout yang sesuai
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H-state</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #6F5239;
+            ;
+            font-weight: bold;
+        }
+
+        .header h1:hover {
+            color: #3F2A1B;
+        }
+
+        .header .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.8s;
+        }
+
+        .header .order,
+        .header .logout {
+            background-color: #6F5239;
+            color: white;
+            border-radius: 20px;
+            box-shadow: 3px 3.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .header .order:hover,
+        .header .logout:hover {
+            background-color: #B3B3B3;
+            color: black;
+            box-shadow: 3px 3.5px black;
+        }
+
+        .background {
+            background-image: url('/background.jpg');
+            background-size: cover;
+            background-position: center;
+            height: calc(100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .background h2 {
+            color: white;
+            font-size: 1.5em;
+            margin-top: 30px;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+
+        .content {
+            padding-top: 20px;
+            padding-bottom: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 50px;
+            width: 100%;
+            height: calc(100% - 40px);
+            max-width: 1000px;
+        }
+
+        .content h2 {
+            font-size: 1.5em;
+            margin: 0px;
+            margin-top: 20px;
+            color: #6F5239;
+            font-weight: bold;
+        }
+
+        .filter {
+            margin-bottom: 10px;
+            margin-right: 75px;
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .filter select {
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding-top: 5px;
+            padding-bottom: 20px;
+            width: 100%;
+            height: 540px;
+            overflow-y: auto;
+            padding-left: 20px;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+
+        .room-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 200px;
+        }
+
+        .room-card:hover {
+            transform: scale(1.05);
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .room-card p {
+            margin: 15px 0;
+            font-size: 1.2em;
+            color: #6F5239;
+            flex-shrink: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: white;
+            color: #5A3E26;
+            border-top: 1px solid #ddd;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+        }
+
+        .modal-header,
+        .modal-footer {
+            border: none;
+            background-color: transparent;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #6F5239;
+        }
+
+        .modal-body img {
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+        }
+
+        .modal-body p {
+            font-size: 1.2em;
+            color: #6F5239;
+            margin: 10px 0;
+        }
+
+        .modal-footer .btn {
+            background-color: #6F5239;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .modal-footer .btn:hover {
+            scale: 1.05;
+        }
+
+        .reservation-popup {
+            position: fixed;
+            bottom: -100%;
+            /* Start off-screen at the bottom */
+            left: 50%;
+            transform: translate(-50%, 0);
+            width: 90%;
+            max-width: 500px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.6s ease-in-out;
+            /* Smooth animation with ease-in-out */
+        }
+
+        .reservation-popup.active {
+            bottom: 50%;
+            /* Move to center */
+            transform: translate(-50%, 50%);
+            /* Adjust to stay centered */
+            opacity: 1;
+        }
+
+
+        .reservation-popup h2 {
+            font-size: 1.5em;
+            color: #6F5239;
+            margin-bottom: 20px;
+        }
+
+        .reservation-popup input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .reservation-popup button {
+            background-color: #6F5239;
+            color: white;
+            border: none;
+            margin-top: 15px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            width: 100%;
+        }
+
+        .reservation-popup button:hover {
+            background-color: #B3B3B3;
+            transition-duration: 0.5s;
+        }
+
+        .reservation-success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .reservation-success-popup p {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        /* CSS untuk tombol .btn-hijau */
+        .modal-footer .btn-hijau {
+            background-color: rgb(18, 172, 18);
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        
+        }
+
+        .modal-footer .btn-hijau:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+        
+        .btn-tidak {
+            background-color: rgb(18, 172, 18);
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        /* .btn-details {
+            background-color: #6F5239;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        } */
+
+        /* .btn-details:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        } */
+
+        .btn-tidak:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+
+        .btn-ya {
+            background-color: red;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        }
+
+        .btn-ya:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+
+        .modal-footer .btn-red {
+            background-color: red;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 2px 2.5px rgba(113, 108, 108, 0.562);
+        
+        }
+
+        .modal-footer .btn-red:hover {
+            scale: 1.05;
+            color: white;
+            box-shadow: 2px 2.5px rgb(97, 96, 96);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>H-state.com</h1>
+        <div class="buttons">
+            <a href="/pesanan_saya"><button class="order">Pesanan Saya</button></a>
+            <button class="logout" data-toggle="modal" data-target="#logoutModal">Log Out</button>
+        </div>
+    </div>
+    <div class="background">
+        <h2>Selamat Datang, <%= fullname %>!</h2>
+        <div class="content">
+            <h2>AVAILABLE ROOM</h2>
+            <div class="filter">
+                <select id="filter" onchange="filterRooms()">
+                    <option value="all">Semua</option>
+                    <option value="deluxe">Deluxe</option>
+                    <option value="premium">Premium</option>
+                    <option value="regular">Regular</option>
+                </select>
+            </div>
+            <div class="room-grid" id="roomGrid">
+                <% rooms.forEach(function(room) { %>
+                    <% if (room.status==='available' ) { %>
+                        <div class="room-card" data-toggle="modal" data-target="#roomModal"
+                            data-image="<%= room.gambar %>" data-kategori="<%= room.kategori %>"
+                            data-price="<%= room.harga %>" data-details="<%= room.fasilitas %>"
+                            data-room-id="<%= room.id_room %>">
+                            <img src="<%= room.gambar %>" alt="Room Image">
+                            <p>Room <%= room.id_room %> - <%= room.harga %>
+                            </p>
+                        </div>
+                        <% } %>
+                            <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Room Details -->
+    <div class="modal fade" id="roomModal" tabindex="-1" role="dialog" aria-labelledby="roomModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roomModalLabel">Room Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalImage" src="" alt="Room Image">
+                    <p id="modalCategory"></p>
+                    <p id="modalPrice"></p>
+                    <p id="modalDetails"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-details" id="openReservation">Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation Popup Form -->
+    <div class="reservation-popup" id="reservationForm" style="display: none;">
+        <h2>Reservasi</h2>
+        <form action="/submit-reservation" method="POST">
+            <input type="hidden" name="id_room" value="">
+            <label for="fullname">Full Name:</label>
+            <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+            <label for="nohp">Phone Number:</label>
+            <input type="text" id="nohp" name="nohp" placeholder="Phone Number" required>
+            <label for="checkin">Check-in Date:</label>
+            <input type="date" id="checkin" name="checkin" required>
+            <label for="checkout">Check-out Date:</label>
+            <input type="date" id="checkout" name="checkout" required>
+            <button type="submit">Submit Reservation</button>
+        </form>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 H-state.com</p>
+    </div>
+
+    <!-- Success Modal for Reservation -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Reservasi Berhasil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Reservasi telah berhasil. Silakan masuk ke menu Pesanan Saya.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Logout -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Logout Confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah anda yakin ingin keluar dari akun ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-hijau" data-dismiss="modal">Tidak</button>
+                    <button type="button" class="btn btn-red" id="confirmLogout">Ya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- jQuery, Popper.js, Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // JavaScript for handling room card clicks and reservation popup
+        document.addEventListener('DOMContentLoaded', function () {
+            const roomCards = document.querySelectorAll('.room-card');
+
+            roomCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const image = card.getAttribute('data-image');
+                    const category = card.getAttribute('data-kategori');
+                    const price = card.getAttribute('data-price');
+                    const details = card.getAttribute('data-details');
+                    const roomId = card.getAttribute('data-room-id');
+
+                    document.getElementById('modalImage').src = image;
+                    document.getElementById('modalCategory').textContent = `Category: ${category}`;
+                    document.getElementById('modalPrice').textContent = `Price: ${price}`;
+                    document.getElementById('modalDetails').textContent = `Details: ${details}`;
+
+                    const bookingButton = document.getElementById('openReservation');
+                    bookingButton.setAttribute('data-room-id', roomId);
+                });
+            });
+
+            const bookingButton = document.getElementById('openReservation');
+            bookingButton.addEventListener('click', function () {
+                const roomId = bookingButton.getAttribute('data-room-id');
+                const reservationForm = document.getElementById('reservationForm');
+                const idRoomInput = reservationForm.querySelector('input[name="id_room"]');
+                idRoomInput.value = roomId;
+                document.getElementById('reservationForm').style.display = 'block';
+            });
+        });
+
+        // jQuery for handling the reservation popup and success modal
+        $(document).ready(function () {
+            $('#openReservation').click(function () {
+                $('#roomModal').modal('hide');
+                $('#reservationForm').addClass('active');
+            });
+
+            $(document).mouseup(function (e) {
+                var popup = $("#reservationForm");
+                if (!popup.is(e.target) && popup.has(e.target).length === 0) {
+                    popup.removeClass('active');
+                }
+            });
+
+            // Show the success modal only if a condition is met (e.g., URL parameter or session variable)
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('reservationSuccess')) {
+                $('#successModal').modal('show');
+            }
+        });
+
+        function deleteReservation(reservationId, roomId) {
+            $.ajax({
+                url: '/delete-reservation',
+                type: 'POST',
+                data: {
+                    reservationId: reservationId,
+                    roomId: roomId
+                },
+                success: function (response) {
+                    alert('Reservation deleted successfully!');
+                    location.reload(); // Reload the page to update room status
+                },
+                error: function (error) {
+                    alert('Failed to delete reservation!');
+                }
+            });
+        }
+
+        function filterRooms() {
+            const filter = document.getElementById('filter').value; // Ambil nilai filter
+            const roomCards = document.querySelectorAll('.room-card');
+
+            roomCards.forEach(card => {
+                const kategori = card.getAttribute('data-kategori');
+
+                if (filter === 'all' || filter === kategori.toLowerCase()) { // Membandingkan dengan kategori lowercase
+                    card.style.display = 'block'; // Tampilkan card jika sesuai dengan filter
+                } else {
+                    card.style.display = 'none'; // Sembunyikan card jika tidak sesuai dengan filter
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Menampilkan modal ketika tombol Log Out ditekan
+            $('.logout').click(function () {
+                $('#logoutModal').modal('show');
+            });
+
+            // Handler saat tombol logout di modal diklik
+            $('#confirmLogout').click(function () {
+                // Lakukan proses logout di sini, misalnya:
+                window.location.href = "/logout"; // Ganti dengan URL logout yang sesuai
+            });
+        });
+    </script>
+</body>
+
+</html>
